@@ -4,6 +4,7 @@ RUN apk update && apk add git
 WORKDIR /app
 RUN git clone https://github.com/Denyol18/prf-projekt.git
 WORKDIR /app/prf-projekt/server
+RUN npm install
 RUN npm ci
 RUN npm run build
 

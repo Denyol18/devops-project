@@ -78,3 +78,59 @@ resource "docker_container" "client" {
     name = docker_network.monitoring.name
   }
 }
+
+resource "local_file" "prometheus_config" {
+  filename = "${path.cwd}/prometheus.yml"
+  content = <<EOF
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'prf_server'
+    static_configs:
+      - targets: ['prf_server:3000']
+EOF
+}
+
+resource "docker_container" "prometheus" {
+  name  = "prometheus"
+  image = "prom/prometheus:v3.7.3"
+  restart = "unless-stopped"
+
+  mounts {
+      target = "/etc/prometheus/prometheus.yml"
+      source = local_file.prometheus_config.filename
+      type   = "bind"
+  }
+
+  ports {
+    internal = 9090
+    external = 9090
+  }
+
+  networks_advanced {
+    name = docker_network.monitoring.name
+  }
+}
+
+resource "docker_container" "grafana" {
+  name  = "grafana"
+  image = "grafana/grafana-oss:12.2.0-17142428006"
+  restart = "unless-stopped"
+
+  env = [
+      "GF_SECURITY_ADMIN_USER=admin",
+      "GF_SECURITY_ADMIN_PASSWORD=admin"
+  ]
+
+  ports {
+    internal = 3000
+    external = 4000
+  }
+
+  depends_on = [docker_container.prometheus]
+
+  networks_advanced {
+    name = docker_network.monitoring.name
+  }
+}
