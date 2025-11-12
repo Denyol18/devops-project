@@ -136,3 +136,146 @@ resource "docker_container" "grafana" {
     name = docker_network.monitoring.name
   }
 }
+
+resource "docker_container" "mongodb" {
+  name  = "mongodb"
+  image = "mongo:8.2.1"
+  restart = "unless-stopped"
+
+  networks_advanced {
+    name = docker_network.monitoring.name
+  }
+
+  volumes {
+      volume_name    = "mongodb_data"
+      container_path = "/data/db"
+  }
+}
+
+resource "docker_container" "datanode" {
+  name = "datanode"
+  image = "graylog/graylog-datanode:7.0"
+  restart = "unless-stopped"
+
+  networks_advanced {
+      name = docker_network.monitoring.name
+  }
+
+  env = [
+      "GRAYLOG_DATANODE_NODE_ID_FILE=/var/lib/graylog-datanode/node-id",
+      "GRAYLOG_DATANODE_PASSWORD_SECRET=somepasswordpepper",
+      "GRAYLOG_DATANODE_MONGODB_URI=mongodb://mongodb:27017/graylog"
+  ]
+
+  ports {
+      internal = 8999
+      external = 8999
+  }
+
+  ports {
+      internal = 9200
+      external = 9200
+  }
+
+  ports {
+      internal = 9300
+      external = 9300
+  }
+
+  volumes {
+      volume_name = "graylog_datanode"
+      container_path = "/var/lib/graylog-datanode"
+  }
+}
+
+resource "docker_container" "graylog" {
+  name     = "graylog"
+  image    = "graylog/graylog:7.0"
+  restart = "unless-stopped"
+
+  networks_advanced {
+      name = docker_network.monitoring.name
+  }
+
+  env = [
+      "GRAYLOG_NODE_ID_FILE=/usr/share/graylog/data/config/node-id",
+      "GRAYLOG_PASSWORD_SECRET=somepasswordpepper",
+      "GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+      "GRAYLOG_HTTP_BIND_ADDRESS=0.0.0.0:9000",
+      "GRAYLOG_HTTP_EXTERNAL_URI=http://localhost:9000/",
+      "GRAYLOG_MONGODB_URI=mongodb://mongodb:27017/graylog"
+  ]
+
+  entrypoint = ["/usr/bin/tini", "--", "/docker-entrypoint.sh"]
+
+  ports {
+      internal = 5044
+      external = 5044
+  }
+
+  ports {
+      internal = 5140
+      external = 5140
+      protocol = "udp"
+  }
+
+  ports {
+      internal = 5140
+      external = 5140
+      protocol = "tcp"
+  }
+
+  ports {
+      internal = 5555
+      external = 5555
+      protocol = "tcp"
+  }
+
+  ports {
+      internal = 5555
+      external = 5555
+      protocol = "udp"
+  }
+
+  ports {
+      internal = 9000
+      external = 9000
+  }
+
+  ports {
+      internal = 12201
+      external = 12201
+      protocol = "tcp"
+  }
+
+  ports {
+      internal = 12201
+      external = 12201
+      protocol = "udp"
+  }
+
+  ports {
+      internal = 13301
+      external = 13301
+  }
+
+  ports {
+      internal = 13302
+      external = 13302
+  }
+
+  volumes {
+      volume_name    = "graylog_data"
+      container_path = "/usr/share/graylog/data/data"
+  }
+
+  volumes {
+      volume_name    = "graylog_journal"
+      container_path = "/usr/share/graylog/data/journal"
+  }
+
+  depends_on = [
+      docker_container.mongodb,
+      docker_container.datanode
+  ]
+}

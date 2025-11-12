@@ -4,9 +4,8 @@ RUN apk update && apk add git
 WORKDIR /app
 RUN git clone https://github.com/Denyol18/prf-projekt.git
 WORKDIR /app/prf-projekt/server
-RUN npm install                 # only to update package-lock.json
-RUN npx ts-node src/seeder.ts   # only to reset database
 RUN npm ci
+# RUN npx ts-node src/seeder.ts   # only to reset database
 RUN npm run build
 
 # Production stage
