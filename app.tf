@@ -83,10 +83,12 @@ resource "local_file" "prometheus_config" {
   filename = "${path.cwd}/prometheus.yml"
   content = <<EOF
 global:
-  scrape_interval: 5s
+  scrape_interval: 15s
+  evaluation_interval: 15s
 
 scrape_configs:
   - job_name: 'prf_server'
+    scrape_interval: 5s
     static_configs:
       - targets: ['prf_server:3000']
 EOF
