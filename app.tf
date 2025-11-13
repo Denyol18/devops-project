@@ -88,7 +88,7 @@ global:
 
 scrape_configs:
   - job_name: 'prf_server'
-    scrape_interval: 5s
+    scrape_interval: 10s
     static_configs:
       - targets: ['prf_server:3000']
 EOF
