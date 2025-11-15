@@ -9,8 +9,8 @@ pipeline {
   environment {
     APP_REPO = "https://github.com/Denyol18/prf-projekt.git"
     REGISTRY = "denyol/prf-projekt"
-    SERVER_IMAGE = "${env.REGISTRY}:prf-server-${env.BUILD_NUMBER}"
-    CLIENT_IMAGE = "${env.REGISTRY}:prf-client-${env.BUILD_NUMBER}"
+    SERVER_IMAGE = "${env.REGISTRY}:prf-server:${env.BUILD_NUMBER}"
+    CLIENT_IMAGE = "${env.REGISTRY}:prf-client:${env.BUILD_NUMBER}"
   }
 
   stages {
@@ -21,11 +21,10 @@ pipeline {
       }
     }
 
-    stage('Cleanup Before & Clone App') {
+    stage('Cleanup & Clone App') {
       steps {
         sh """
 		  terraform destroy -auto-approve
-		  rm -f prometheus.yml
 		  rm -rf build-context
 		  rm -rf client-src
 		  rm -rf server-src
@@ -39,7 +38,7 @@ pipeline {
       steps {
         dir('prf-projekt/server') {
           sh 'npm install'
-		  sh 'npx ts-node src/seeder.ts'
+		  // sh 'npx ts-node src/seeder.ts'
           sh 'npm test || true'
           sh 'npm run build'
         }
@@ -95,21 +94,9 @@ pipeline {
 
 	stage('Release & Deploy') {
 	  steps {
-	    sh '''
-		  cat > prometheus.yml <<EOF
-		  global:
-			scrape_interval: 15s
-			evaluation_interval: 15s
-		  scrape_configs:
-			- job_name: 'prf_server'
-			  scrape_interval: 10s
-			  static_configs:
-				- targets: ['prf_server:3000']
-		EOF
-		'''
 		sh 'terraform init'
 		sh 'terraform plan'
-		sh 'terraform apply -auto-approve -var server_image=$SERVER_IMAGE -var client_image=$CLIENT_IMAGE'
+		sh "terraform apply -auto-approve -var server_image=$SERVER_IMAGE -var client_image=$CLIENT_IMAGE"
 	  }
 	}
 	
