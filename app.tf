@@ -73,21 +73,6 @@ resource "docker_container" "client" {
   }
 }
 
-resource "local_file" "prometheus_config" {
-  filename = "${path.cwd}/prometheus.yml"
-  content = <<EOF
-global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
-
-scrape_configs:
-  - job_name: 'prf_server'
-    scrape_interval: 10s
-    static_configs:
-      - targets: ['prf_server:3000']
-EOF
-}
-
 resource "docker_container" "prometheus" {
   name  = "prometheus"
   image = "prom/prometheus:v3.7.3"
@@ -95,7 +80,7 @@ resource "docker_container" "prometheus" {
 
   mounts {
       target = "/etc/prometheus/prometheus.yml"
-      source = local_file.prometheus_config.filename
+      source = ${path.cwd}/prometheus.yml
       type   = "bind"
   }
 

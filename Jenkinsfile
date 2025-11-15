@@ -25,6 +25,7 @@ pipeline {
       steps {
         sh """
 		  terraform destroy -auto-approve
+		  rm -f prometheus.yml
 		  rm -rf build-context
 		  rm -rf client-src
 		  rm -rf server-src
@@ -94,6 +95,18 @@ pipeline {
 
 	stage('Release & Deploy') {
 	  steps {
+	    sh '''
+		  cat > prometheus.yml <<EOF
+		  global:
+			scrape_interval: 15s
+			evaluation_interval: 15s
+		  scrape_configs:
+			- job_name: 'prf_server'
+			  scrape_interval: 10s
+			  static_configs:
+				- targets: ['prf_server:3000']
+		EOF
+		'''
 		sh 'terraform init'
 		sh 'terraform plan'
 		sh 'terraform apply -auto-approve -var server_image=$SERVER_IMAGE -var client_image=$CLIENT_IMAGE'
