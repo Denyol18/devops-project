@@ -24,6 +24,7 @@ pipeline {
     stage('Cleanup Before & Clone App') {
       steps {
         sh """
+		  sh 'terraform destroy -auto-approve'
 		  rm -rf build-context
 		  rm -rf client-src
 		  rm -rf server-src
