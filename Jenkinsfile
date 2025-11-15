@@ -1,6 +1,11 @@
 pipeline {
   agent any
 
+  tools {
+    nodejs 'nodejs'
+    dockerTool 'docker'
+  }
+
   environment {
     APP_REPO = "https://github.com/Denyol18/prf-projekt.git"
     REGISTRY = "denyol/prf-projekt"
