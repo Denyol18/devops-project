@@ -56,6 +56,7 @@ pipeline {
 		  mkdir build-context
           cp -r prf-projekt/server build-context/server-src
           cp -r prf-projekt/client build-context/client-src
+		  cp -r prf-projekt/pm2 build-context/pm2
 		  rm -rf prf-projekt
         """
       }
