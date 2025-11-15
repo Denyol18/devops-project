@@ -80,7 +80,7 @@ resource "docker_container" "prometheus" {
 
   mounts {
       target = "/etc/prometheus/prometheus.yml"
-      source = ${path.cwd}/prometheus.yml
+      source = "${path.cwd}/prometheus.yml"
       type   = "bind"
   }
 
