@@ -74,7 +74,7 @@ resource "docker_container" "client" {
 }
 
 resource "local_file" "prometheus_config" {
-  filename = "${path.module}/prometheus.yml"
+  filename = "${path.cwd}/prometheus.yml"
   content = <<EOF
 global:
   scrape_interval: 15s
