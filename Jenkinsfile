@@ -14,15 +14,18 @@ pipeline {
 
   stages {
   
-    stage('Checkout CI/CD repo') {
+    stage('Checkout') {
       steps {
         checkout scm
       }
     }
 
-    stage('Checkout App Code') {
+    stage('Cleanup Before & Clone App') {
       steps {
         sh """
+		  rm -rf build-context
+		  rm -rf client-src
+		  rm -rf server-src
           rm -rf prf-projekt
           git clone ${APP_REPO}
         """
