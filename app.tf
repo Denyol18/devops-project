@@ -18,34 +18,26 @@ resource "docker_network" "monitoring" {
 
 variable "server_image" {
   type    = string
-  default = "prf-server:latest"
 }
 
 variable "client_image" {
   type    = string
-  default = "prf-client:latest"
 }
 
 resource "docker_image" "server_image" {
   name         = var.server_image
-  build {
-    context    = "${path.cwd}"
-    dockerfile = "${path.cwd}/Dockerfile.server"
-  }
+  keep_locally = false
 }
 
 resource "docker_image" "client_image" {
   name         = var.client_image
-  build {
-    context    = "${path.cwd}"
-    dockerfile = "${path.cwd}/Dockerfile.client"
-  }
+  keep_locally = false
 }
 
 resource "docker_container" "server" {
-  name  = "prf_server"
-  image = docker_image.server_image.name
-  restart = "unless-stopped"
+  name     = "prf_server"
+  image    = docker_image.server_image.name
+  restart  = "unless-stopped"
 
   env = [
     "JWT_SECRET=valami_nagyon_titkos_jelszo",
@@ -63,9 +55,9 @@ resource "docker_container" "server" {
 }
 
 resource "docker_container" "client" {
-  name  = "prf_client"
-  image = docker_image.client_image.name
-  restart = "unless-stopped"
+  name     = "prf_client"
+  image    = docker_image.client_image.name
+  restart  = "unless-stopped"
 
   ports {
     internal = 80
@@ -80,7 +72,7 @@ resource "docker_container" "client" {
 }
 
 resource "local_file" "prometheus_config" {
-  filename = "${path.cwd}/prometheus.yml"
+  filename = "${path.module}/prometheus.yml"
   content = <<EOF
 global:
   scrape_interval: 15s

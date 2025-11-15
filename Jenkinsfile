@@ -8,12 +8,12 @@ pipeline {
   environment {
     APP_REPO = "https://github.com/Denyol18/prf-projekt.git"
     REGISTRY = "denyol/prf-projekt"
-    SERVER_IMAGE = "${env.REGISTRY}:server-${env.BUILD_NUMBER}"
-    CLIENT_IMAGE = "${env.REGISTRY}:client-${env.BUILD_NUMBER}"
+    SERVER_IMAGE = "${env.REGISTRY}:prf-server-${env.BUILD_NUMBER}"
+    CLIENT_IMAGE = "${env.REGISTRY}:prf-client-${env.BUILD_NUMBER}"
   }
 
   stages {
-
+  
     stage('Checkout CI/CD repo') {
       steps {
         checkout scm
@@ -33,6 +33,7 @@ pipeline {
       steps {
         dir('prf-projekt/server') {
           sh 'npm install'
+		  sh 'npx ts-node src/seeder.ts'
           sh 'npm test || true'
           sh 'npm run build'
         }
@@ -48,28 +49,27 @@ pipeline {
         }
       }
     }
-	
-	stage('Debug Docker Context') {
-	  steps {
-		sh 'pwd'
-		sh 'ls -l'
-	  }
-	}
 
     stage('Prepare Docker Build Context') {
       steps {
         sh """
-          cp -r prf-projekt/server ./server-src
-          cp -r prf-projekt/client ./client-src
+		  mkdir build-context
+          cp -r prf-projekt/server build-context/server-src
+          cp -r prf-projekt/client build-context/client-src
+		  rm -rf prf-projekt
         """
       }
     }
 
     stage('Build Docker Images') {
-      steps {
-        sh "docker build -t $SERVER_IMAGE -f Dockerfile.server ."
-        sh "docker build -t $CLIENT_IMAGE -f Dockerfile.client ."
-      }
+      parallel {
+		stage('Server Image') {
+		  steps { sh "docker build -t $SERVER_IMAGE -f Dockerfile.server build-context" }
+		}
+		stage('Client Image') {
+		  steps { sh "docker build -t $CLIENT_IMAGE -f Dockerfile.client build-context" }
+		}
+	  }
     }
 
     stage('Push Docker Images') {
@@ -85,5 +85,30 @@ pipeline {
         }
       }
     }
+
+	stage('Release & Deploy') {
+	  agent {
+		docker {
+		  image 'hashicorp/terraform:1.13.5'
+		  args "-u root:root \
+				-v /var/run/docker.sock:/var/run/docker.sock \
+				-v ${env.WORKSPACE}:${env.WORKSPACE} \
+				-w ${env.WORKSPACE}"
+		  reuseNode true 
+		}
+	  }
+	  steps {
+		sh 'terraform init'
+		sh 'terraform plan'
+		sh 'terraform apply -auto-approve -var server_image=$SERVER_IMAGE -var client_image=$CLIENT_IMAGE'
+	  }
+	}
+	
+	stage('Cleanup Old Images') {
+	  steps {
+		sh "docker image prune -f"
+	  }
+	}
+	
   }
 }
