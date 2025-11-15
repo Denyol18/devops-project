@@ -18,10 +18,12 @@ resource "docker_network" "monitoring" {
 
 variable "server_image" {
   type    = string
+  default = "prf-server"
 }
 
 variable "client_image" {
   type    = string
+  default = "prf-client"
 }
 
 resource "docker_image" "server_image" {
