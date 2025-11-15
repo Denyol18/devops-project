@@ -1,7 +1,7 @@
 # Build stage
 FROM node:24-alpine AS builder
 WORKDIR /app
-COPY ./server-src ./  # copy code from Jenkins workspace
+COPY ./server-src ./
 RUN npm ci
 RUN npm run build
 

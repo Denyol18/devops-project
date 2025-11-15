@@ -48,6 +48,13 @@ pipeline {
         }
       }
     }
+	
+	stage('Debug Docker Context') {
+	  steps {
+		sh 'pwd'
+		sh 'ls -l'
+	  }
+	}
 
     stage('Prepare Docker Build Context') {
       steps {
