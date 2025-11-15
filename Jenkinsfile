@@ -3,6 +3,7 @@ pipeline {
 
   tools {
     nodejs 'nodejs'
+	terraform 'terraform'
   }
 
   environment {
@@ -91,16 +92,6 @@ pipeline {
     }
 
 	stage('Release & Deploy') {
-	  agent {
-		docker {
-		  image 'hashicorp/terraform:1.13.5'
-		  args "-u root:root \
-				-v /var/run/docker.sock:/var/run/docker.sock \
-				-v ${env.WORKSPACE}:${env.WORKSPACE} \
-				-w ${env.WORKSPACE}"
-		  reuseNode true 
-		}
-	  }
 	  steps {
 		sh 'terraform init'
 		sh 'terraform plan'
