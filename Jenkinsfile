@@ -9,8 +9,8 @@ pipeline {
   environment {
     APP_REPO = "https://github.com/Denyol18/prf-projekt.git"
     REGISTRY = "denyol/prf-projekt"
-    SERVER_IMAGE = "${env.REGISTRY}:prf-server:${env.BUILD_NUMBER}"
-    CLIENT_IMAGE = "${env.REGISTRY}:prf-client:${env.BUILD_NUMBER}"
+    SERVER_IMAGE = "${env.REGISTRY}:prf-server-${env.BUILD_NUMBER}"
+    CLIENT_IMAGE = "${env.REGISTRY}:prf-client-${env.BUILD_NUMBER}"
   }
 
   stages {
