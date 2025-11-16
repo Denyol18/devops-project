@@ -24,6 +24,7 @@ pipeline {
     stage('Cleanup & Clone App') {
       steps {
         sh """
+		  terraform init
 		  terraform destroy -auto-approve
 		  rm -rf build-context
 		  rm -rf client-src
