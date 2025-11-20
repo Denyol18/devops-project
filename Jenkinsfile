@@ -40,7 +40,7 @@ pipeline {
         dir('prf-projekt/server') {
           sh 'npm install'
 		  // sh 'npx ts-node src/seeder.ts'
-          sh 'npm test || true'
+          sh 'npm test -- --runInBand --ci --silent || true'
           sh 'npm run build'
         }
       }
@@ -50,7 +50,7 @@ pipeline {
       steps {
         dir('prf-projekt/client') {
           sh 'npm install'
-          sh 'npm test || true'
+          sh 'npm test -- --runInBand --ci --silent || true'
           sh 'npm run build'
         }
       }
