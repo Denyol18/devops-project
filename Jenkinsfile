@@ -35,7 +35,7 @@ pipeline {
       }
     }
 
-    stage('Build & Test Server') {
+    stage('Test & Build Server') {
       steps {
         dir('prf-projekt/server') {
           sh 'npm install'
@@ -46,7 +46,7 @@ pipeline {
       }
     }
 
-    stage('Build & Test Client') {
+    stage('Test & Build Client') {
       steps {
         dir('prf-projekt/client') {
           sh 'npm install'
