@@ -18,6 +18,7 @@ pipeline {
         sh """
 		  terraform init
 		  terraform destroy -auto-approve
+		  docker system prune -f
           rm -rf prf-projekt
           git clone ${APP_REPO}
         """
