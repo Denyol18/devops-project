@@ -18,27 +18,17 @@ resource "docker_network" "monitoring" {
 
 variable "server_image" {
   type    = string
-  default = "prf-server"
+  default = "prf_server"
 }
 
 variable "client_image" {
   type    = string
-  default = "prf-client"
-}
-
-resource "docker_image" "server_image" {
-  name         = var.server_image
-  keep_locally = false
-}
-
-resource "docker_image" "client_image" {
-  name         = var.client_image
-  keep_locally = false
+  default = "prf_client"
 }
 
 resource "docker_container" "server" {
   name     = "prf_server"
-  image    = docker_image.server_image.name
+  image    = var.server_image
   restart  = "unless-stopped"
 
   env = [
@@ -58,7 +48,7 @@ resource "docker_container" "server" {
 
 resource "docker_container" "client" {
   name     = "prf_client"
-  image    = docker_image.client_image.name
+  image    = var.client_image
   restart  = "unless-stopped"
 
   ports {
