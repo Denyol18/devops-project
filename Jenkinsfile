@@ -18,6 +18,7 @@ pipeline {
         sh """
 		  docker system prune -f
 		  docker volume prune -f
+		  rm -rf prf-projekt
           git clone ${APP_REPO}
         """
       }
@@ -69,7 +70,6 @@ pipeline {
 	stage('Cleanup Unused Images') {
 	  steps {
 		sh "docker image prune -f"
-		deleteDir()
 	  }
 	}
   }
