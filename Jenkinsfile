@@ -17,6 +17,7 @@ pipeline {
       steps {
         sh """
 		  docker system prune -f
+		  docker image prune -f
 		  docker volume prune -f
 		  rm -rf prf-projekt
           git clone ${APP_REPO}
