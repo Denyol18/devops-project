@@ -69,7 +69,7 @@ pipeline {
 	stage('Cleanup Unused Images & Workspace') {
 	  steps {
 		sh 'docker image prune -f'
-		sh "find . ! -name 'prometheus.yml' -exec rm -rf {} +"
+		sh "find . ! -name 'prometheus.yml' -exec rm -rf {} + || true"
 	  }
 	}
   }
