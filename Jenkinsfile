@@ -15,7 +15,6 @@ pipeline {
   stages {
     stage('Cleanup & Clone App') {
       steps {
-		deleteDir()
         sh """
 		  docker system prune -f
 		  docker volume prune -f
@@ -70,6 +69,7 @@ pipeline {
 	stage('Cleanup Unused Images') {
 	  steps {
 		sh "docker image prune -f"
+		deleteDir()
 	  }
 	}
   }
