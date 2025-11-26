@@ -17,7 +17,6 @@ pipeline {
       steps {
         sh """
 		  docker system prune -f
-		  docker volume prune -f
           git clone ${APP_REPO}
         """
       }
@@ -66,9 +65,10 @@ pipeline {
 	  }
 	}
 	
-	stage('Cleanup Unused Images & Workspace') {
+	stage('Cleanup Unused Images, Volumes & Workspace') {
 	  steps {
 		sh 'docker image prune -f'
+		sh 'docker volume prune -f'
 		sh "find . ! -name 'prometheus.yml' -exec rm -rf {} + || true"
 	  }
 	}
