@@ -18,6 +18,7 @@ pipeline {
 		sh 'terraform destroy -auto-approve || true'
         sh """
 		  docker system prune -f
+		  docker volume prune -f
           rm -rf prf-projekt
           git clone ${APP_REPO}
         """
