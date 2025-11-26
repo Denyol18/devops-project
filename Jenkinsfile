@@ -15,11 +15,10 @@ pipeline {
   stages {
     stage('Cleanup & Clone App') {
       steps {
-		sh 'terraform destroy -auto-approve || true'
+		deleteDir()
         sh """
 		  docker system prune -f
 		  docker volume prune -f
-          rm -rf prf-projekt
           git clone ${APP_REPO}
         """
       }
