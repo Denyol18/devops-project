@@ -29,7 +29,7 @@ pipeline {
         dir('prf-projekt/server') {
           sh 'npm install'
 		  sh 'npx ts-node src/seeder.ts'
-          sh 'npm test -- --runInBand --ci --silent || true'
+          sh 'npm test -- --runInBand --ci --silent'
         }
       }
     }
@@ -38,7 +38,7 @@ pipeline {
       steps {
         dir('prf-projekt/client') {
           sh 'npm install'
-          sh 'npm test -- --runInBand --ci --silent || true'
+          sh 'npm test -- --runInBand --ci --silent'
         }
       }
     }
@@ -67,7 +67,7 @@ pipeline {
 	  }
 	}
 	
-	stage('Cleanup Old Images') {
+	stage('Cleanup Unused Images') {
 	  steps {
 		sh "docker image prune -f"
 	  }
