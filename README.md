@@ -3,7 +3,7 @@
 Ez a repo a [programrendszerek fejlesztése projektmunka](https://github.com/Denyol18/prf-projekt) ci/cd implementációját tartalmazza, köztük:
 - egy `Jenkinsfile` scriptet
 - kettő `Dockerfile`-t, a szerver és kliens oldalak számára
-- egy `app.tf` Terraform fájlt, amivel felépül az alkalmazás
+- egy `app.tf` Terraform fájlt, amivel felépül, majd elindul az alkalmazás és a monitoringhoz szükséges rendszerek
 - egy `prometheus.yml` fájlt, amivel a Prometheus kerül konfigurálásra
 - és egy `pm2/ecosystem.config.js` fájlt, amivel a pm2 kerül konfigurálásra
 
@@ -48,7 +48,7 @@ Sikeres build után a következő portokon a következők érhetők el:
 
 ### Grafana beüzemelése:
 
-1. admin-admin párossal való bejelentkezés után a következő végrehajtása: data sources, add data source, prometheus, url: http://prometheus:9090, save & test
+1. admin-admin párossal való bejelentkezés után a következők végrehajtása: data sources, add data source, prometheus, url: http://prometheus:9090, save & test
 2. Dashboard készítéshez pedig: dashboards, create dashboard, add visualization, prometheus data source választása
 
 ### Graylog beüzemelése:
